@@ -48,11 +48,8 @@ class InputForm(ttk.Frame):
         self.text_list.delete(0, tk.END)
 
 def main():
-    app = Application()
-    app.mainloop()
-
-    # main_menu = MainMenuWindow()
-    # main_menu.root.mainloop()
+    main_menu = MainMenuWindow()
+    main_menu.mainloop()
 
 
 
