@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from graphics import MainMenuWindow, GameWindow
+from graphics import MainWindow
 
 class Application(tk.Tk):
     def __init__(self):
@@ -48,7 +48,7 @@ class InputForm(ttk.Frame):
         self.text_list.delete(0, tk.END)
 
 def main():
-    main_menu = MainMenuWindow()
+    main_menu = MainWindow()
     main_menu.mainloop()
 
 
