@@ -6,12 +6,18 @@ class MainWindow(tk.Tk):
         super().__init__()
         self.title("Sudoku 6x6 Helper - Main Menu")
 
-        self.rowconfigure(0, weight=1)
-        self.rowconfigure(1, weight=50)
+        self.rowconfigure(0, weight=0)
+        self.rowconfigure(1, weight=1)
         self.columnconfigure(0, weight=1)
 
         self.minsize(400, 300)
         # self.maxsize(800, 600)
+
+        # self.header = Header(self, "Main Menu", True, height=300)
+        # self.header.pack(side="top", fill="x", expand=True)
+
+        # self.menu = tk.Frame(self, bg="red")
+        # self.menu.pack(side="bottom", fill="both", expand=True)
 
         self.header = Header(self, "Main Menu", True)
         self.header.grid(row=0, column=0, sticky="nsew")
@@ -36,15 +42,10 @@ class Header(ttk.Frame):
 
         self.header_lbl = ttk.Label(self, text=self.header_text, font=("Helvetica", max(10, self.winfo_height() // 2)))
         self.header_lbl.grid(row=0, column=0, columnspan=2, sticky="ns")
-        self.bind("<Configure>", self.resize_header)
 
     def back(self):
         pass
 
-    def resize_header(self, event):
-        self.header_lbl.config(font=("Helvetica", max(10, event.height // 2)))
-        # self.parent.call('tk', 'scaling', event.height / 2)
-        # print(event.height / 2)
 
 class Menu(ttk.Frame):
     def __init__(self, parent):
@@ -52,7 +53,7 @@ class Menu(ttk.Frame):
 
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
-        self.columnconfigure(1, weight=9)
+        self.columnconfigure(1, weight=0)
 
         if self.back_enabled:
             self.back_btn = ttk.Button(text="<-- Back")
@@ -60,4 +61,3 @@ class Menu(ttk.Frame):
 
         self.header_lbl = ttk.Label(self, text=self.header_text, font=("Helvetica", max(10, self.winfo_height() // 2)))
         self.header_lbl.grid(row=0, column=0, columnspan=2, sticky="ns")
-        self.bind("<Configure>", self.resize_header)
