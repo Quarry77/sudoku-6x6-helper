@@ -19,15 +19,21 @@ class MainWindow(tk.Tk):
         # self.menu = tk.Frame(self, bg="red")
         # self.menu.pack(side="bottom", fill="both", expand=True)
 
+        self.style = ttk.Style()
+        self.style.configure('Red.TFrame',background="red")
+
         self.header = Header(self, "Main Menu", True)
         self.header.grid(row=0, column=0, sticky="nsew")
 
-        self.menu = tk.Frame(self, bg="red")
+        self.game_screen = tk.Frame(self, bg="blue")
+        self.game_screen.grid(row=1, column=0, sticky="nsew")
+
+        self.menu = Menu(self, style="Red.TFrame")
         self.menu.grid(row=1, column=0, sticky="nsew")
 
 class Header(ttk.Frame):
-    def __init__(self, parent, header_text="Header", back_enabled=False):
-        super().__init__(parent)
+    def __init__(self, parent, header_text="Header", back_enabled=False, *args, **kwargs):
+        super().__init__(parent, **kwargs)
         self.parent = parent
         self.header_text = header_text
         self.back_enabled = back_enabled
@@ -48,16 +54,12 @@ class Header(ttk.Frame):
 
 
 class Menu(ttk.Frame):
-    def __init__(self, parent):
+    def __init__(self, parent, *args, **kwargs):
         super().__init__(parent)
 
-        self.rowconfigure(0, weight=1)
-        self.columnconfigure(0, weight=1)
-        self.columnconfigure(1, weight=0)
+        # self.rowconfigure(0, weight=1)
+        # self.columnconfigure(0, weight=1)
+        # self.columnconfigure(1, weight=0)
 
-        if self.back_enabled:
-            self.back_btn = ttk.Button(text="<-- Back")
-            self.back_btn.grid(row=0, column=0)
-
-        self.header_lbl = ttk.Label(self, text=self.header_text, font=("Helvetica", max(10, self.winfo_height() // 2)))
-        self.header_lbl.grid(row=0, column=0, columnspan=2, sticky="ns")
+        self.new_game_btn = ttk.Button(self, text="New Game")
+        self.new_game_btn.grid(row=0, column=0, sticky="s")
