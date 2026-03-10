@@ -2,22 +2,16 @@ import tkinter as tk
 from tkinter import ttk, font
 
 class MainWindow(tk.Tk):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.title("Sudoku 6x6 Helper - Main Menu")
+        self.geometry(f"{self.winfo_screenwidth()//2}x{self.winfo_screenheight()//2}+{self.winfo_screenwidth()//4}+{self.winfo_screenheight()//4}")
 
         self.rowconfigure(0, weight=0)
         self.rowconfigure(1, weight=1)
         self.columnconfigure(0, weight=1)
 
         self.minsize(400, 300)
-        # self.maxsize(800, 600)
-
-        # self.header = Header(self, "Main Menu", True, height=300)
-        # self.header.pack(side="top", fill="x", expand=True)
-
-        # self.menu = tk.Frame(self, bg="red")
-        # self.menu.pack(side="bottom", fill="both", expand=True)
 
         self.style = ttk.Style()
         self.style.theme_use('clam')
@@ -25,7 +19,7 @@ class MainWindow(tk.Tk):
         self.style.configure('Blue.TFrame',background="#C6C6FF")
         self.style.configure('Green.TFrame',background="#E5F7E5")
 
-        self.header = Header(self, "Main Menu", height=30)
+        self.header = Header(self, "Main Menu", height=35)
         self.header.grid(row=0, column=0, sticky="nsew")
 
         self.maker_screen = Maker(self, style="Blue.TFrame")
@@ -82,22 +76,22 @@ class Menu(ttk.Frame):
         self.columnconfigure(4, weight=1)
 
         self.new_game_btn = ttk.Button(self, text="Load Game", command=self.load_maker)
-        self.new_game_btn.grid(row=1, column=1)
+        self.new_game_btn.grid(row=1, column=1, padx=5, pady=5)
 
         self.new_game_btn = ttk.Button(self, text="Load Game", command=self.load_player)
-        self.new_game_btn.grid(row=2, column=1)
+        self.new_game_btn.grid(row=2, column=1, padx=5, pady=5)
 
-        self.new_game_btn = ttk.Button(self, text="Maker", command=self.go_to_maker)
-        self.new_game_btn.grid(row=1, column=2)
+        self.new_game_btn = ttk.Button(self, text="Maker", command=self.go_to_maker, padding=10)
+        self.new_game_btn.grid(row=1, column=2, pady=5)
 
-        self.new_game_btn = ttk.Button(self, text="Player", command=self.go_to_player)
-        self.new_game_btn.grid(row=2, column=2)
+        self.new_game_btn = ttk.Button(self, text="Player", command=self.go_to_player, padding=10)
+        self.new_game_btn.grid(row=2, column=2, pady=5)
 
         self.new_game_btn = ttk.Button(self, text="Clear Game", command=self.clear_maker)
-        self.new_game_btn.grid(row=1, column=3)
+        self.new_game_btn.grid(row=1, column=3, padx=5, pady=5)
 
-        self.new_game_btn = ttk.Button(self, text="Clear Game", command=self.clear_player)
-        self.new_game_btn.grid(row=2, column=3)
+        # self.new_game_btn = ttk.Button(self, text="Clear Game", command=self.clear_player)
+        # self.new_game_btn.grid(row=2, column=3, padx=5, pady=5)
 
     def load_maker(self):
         print("TODO: Load Maker")
@@ -130,13 +124,13 @@ class Maker(ttk.Frame):
 
         self.rowconfigure(0, weight=1)
         self.rowconfigure(1, weight=0)
-        self.rowconfigure(2, weight=0)
-        self.rowconfigure(3, weight=1)
+        self.rowconfigure(2, weight=1)
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=0)
-        self.columnconfigure(2, weight=0)
-        self.columnconfigure(3, weight=0)
-        self.columnconfigure(4, weight=1)
+        self.columnconfigure(2, weight=1)
+
+        self.cells = GameCells(self, width=300, height=200)
+        self.cells.grid(row=1, column=1, sticky="nsew")
 
 class Player(ttk.Frame):
     def __init__(self, parent, *args, **kwargs):
@@ -152,3 +146,57 @@ class Player(ttk.Frame):
         self.columnconfigure(2, weight=0)
         self.columnconfigure(3, weight=0)
         self.columnconfigure(4, weight=1)
+
+class GameCells(ttk.Frame):
+    def __init__(self, parent, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.parent = parent
+        self.after_id = None
+
+        self.rowconfigure(0, weight=1)
+        self.rowconfigure(1, weight=1)
+        self.rowconfigure(2, weight=1)
+        self.rowconfigure(3, weight=1)
+        self.rowconfigure(4, weight=1)
+        self.rowconfigure(5, weight=1)
+        self.rowconfigure(6, weight=1)
+        self.rowconfigure(7, weight=1)
+
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
+        self.columnconfigure(2, weight=1)
+        self.columnconfigure(3, weight=1)
+        self.columnconfigure(4, weight=1)
+        self.columnconfigure(5, weight=1)
+        self.columnconfigure(6, weight=1)
+        self.columnconfigure(7, weight=1)
+
+        self.bind("<Configure>", self.enforce_aspect_ratio)
+
+        self.cells = [[None for _ in range(8)] for _ in range(8)]
+        for r in range(8):
+            for c in range(8):
+                # self.cells[r][c] = tk.Frame(self, bg=f"#{9-c}{9-c}{r+2}{r+2}{(c+r)%10}{(c+r)%10}", height=20, width=20)
+                # self.cells[r][c] = tk.Frame(self, bg=f"#ffffff", height=20, width=20)
+                # self.cells[r][c] = tk.Canvas(self, bg=f"#ffffff", highlightthickness=(c>0 and r>0 and c<7 and r<7)/2, highlightbackground="black")
+                self.cells[r][c] = tk.Canvas(self, bg=f"#ffffff", highlightthickness=0)
+                self.cells[r][c].create_line(0, 0, 100, 100, fill="black")
+                self.cells[r][c].create_line(100, 0, 0, 100, fill="black")
+                self.cells[r][c].grid(row=r, column=c, sticky="nsew")
+                # self.cells[r][c].grid(row=r, column=c, sticky="nsew")
+
+    def on_configure_bind(self, event):
+        # Cancel any pending 'after_idle' calls
+        if self.after_id:
+            self.after_cancel(self.after_id)
+        
+        # Schedule the actual update function to run when idle
+        self.after_id = self.after_idle(self.enforce_aspect_ratio)
+
+    def enforce_aspect_ratio(self, event=None):
+        desired_size = min(self.master.winfo_width(), self.master.winfo_height())/10
+        for r in range(8):
+            for c in range(8):
+                self.cells[r][c].config(width=desired_size, height=desired_size)
+                # self.cells[r][c].update_idletasks()
+
