@@ -199,4 +199,3 @@ class GameCells(ttk.Frame):
             for c in range(8):
                 self.cells[r][c].config(width=desired_size, height=desired_size)
                 # self.cells[r][c].update_idletasks()
-
