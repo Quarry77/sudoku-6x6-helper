@@ -129,7 +129,7 @@ class Maker(ttk.Frame):
         self.columnconfigure(1, weight=0)
         self.columnconfigure(2, weight=1)
 
-        self.cells = GameCells(self, width=300, height=200)
+        self.cells = GameGrid(self, width=300, height=200)
         self.cells.grid(row=1, column=1, sticky="nsew")
 
 class Player(ttk.Frame):
@@ -147,7 +147,7 @@ class Player(ttk.Frame):
         self.columnconfigure(3, weight=0)
         self.columnconfigure(4, weight=1)
 
-class GameCells(ttk.Frame):
+class GameGrid(ttk.Frame):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.parent = parent
@@ -179,9 +179,7 @@ class GameCells(ttk.Frame):
                 # self.cells[r][c] = tk.Frame(self, bg=f"#{9-c}{9-c}{r+2}{r+2}{(c+r)%10}{(c+r)%10}", height=20, width=20)
                 # self.cells[r][c] = tk.Frame(self, bg=f"#ffffff", height=20, width=20)
                 # self.cells[r][c] = tk.Canvas(self, bg=f"#ffffff", highlightthickness=(c>0 and r>0 and c<7 and r<7)/2, highlightbackground="black")
-                self.cells[r][c] = tk.Canvas(self, bg=f"#ffffff", highlightthickness=0)
-                self.cells[r][c].create_line(0, 0, 100, 100, fill="black")
-                self.cells[r][c].create_line(100, 0, 0, 100, fill="black")
+                self.cells[r][c] = Cell(self, bg=f"#ffffff", highlightthickness=0)
                 self.cells[r][c].grid(row=r, column=c, sticky="nsew")
                 # self.cells[r][c].grid(row=r, column=c, sticky="nsew")
 
@@ -198,4 +196,58 @@ class GameCells(ttk.Frame):
         for r in range(8):
             for c in range(8):
                 self.cells[r][c].config(width=desired_size, height=desired_size)
-                # self.cells[r][c].update_idletasks()
+                self.cells[r][c].width = desired_size
+                self.cells[r][c].height = desired_size
+                self.cells[r][c].update_lines()
+
+
+class Cell(tk.Canvas):
+    def __init__(self, parent, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.width = self.winfo_width()
+        self.height = self.winfo_height()
+
+        self.wall_inner_top = self.create_line(0, 0, 0, 0)
+        self.wall_inner_bottom = self.create_line(0, 0, 0, 0)
+        self.wall_inner_left = self.create_line(0, 0, 0, 0)
+        self.wall_inner_right = self.create_line(0, 0, 0, 0)
+        self.wall_outer_top = self.create_line(0, 0, 0, 0)
+        self.wall_outer_bottom = self.create_line(0, 0, 0, 0)
+        self.wall_outer_left = self.create_line(0, 0, 0, 0)
+        self.wall_outer_right = self.create_line(0, 0, 0, 0)
+        self.update_lines()
+
+        # self.itemconfig(self.wall_inner_top, state="hidden")
+        # self.itemconfig(self.wall_inner_bottom, state="hidden")
+        # self.itemconfig(self.wall_inner_left, state="hidden")
+        # self.itemconfig(self.wall_inner_right, state="normal")
+
+    def update_lines(self):
+        # Inner Walls
+        wall_inner_top_state = self.itemcget(self.wall_inner_top, "state")
+        wall_inner_bottom_state = self.itemcget(self.wall_inner_bottom, "state")
+        wall_inner_left_state = self.itemcget(self.wall_inner_left, "state")
+        wall_inner_right_state = self.itemcget(self.wall_inner_right, "state")
+        self.delete(self.wall_inner_top)
+        self.delete(self.wall_inner_bottom)
+        self.delete(self.wall_inner_left)
+        self.delete(self.wall_inner_right)
+        self.wall_inner_top = self.create_line(0, 0, self.width, 0, fill="black", width=1, state=wall_inner_top_state)
+        self.wall_inner_bottom = self.create_line(0, self.height-1, self.width, self.height-1, fill="black", width=1, state=wall_inner_bottom_state)
+        self.wall_inner_left = self.create_line(0, 0, 0, self.height, fill="black", width=1, state=wall_inner_left_state)
+        self.wall_inner_right = self.create_line(self.width-1, 0, self.width-1, self.height, fill="black", width=1, state=wall_inner_right_state)
+
+        # Outer Walls
+        wall_outer_top_state = self.itemcget(self.wall_outer_top, "state")
+        wall_outer_bottom_state = self.itemcget(self.wall_outer_bottom, "state")
+        wall_outer_left_state = self.itemcget(self.wall_outer_left, "state")
+        wall_outer_right_state = self.itemcget(self.wall_outer_right, "state")
+        self.delete(self.wall_outer_top)
+        self.delete(self.wall_outer_bottom)
+        self.delete(self.wall_outer_left)
+        self.delete(self.wall_outer_right)
+        self.wall_outer_top = self.create_line(0, 2, self.width, 2, fill="black", width=3, state=wall_outer_top_state)
+        self.wall_outer_bottom = self.create_line(0, self.height-3, self.width, self.height-3, fill="black", width=3, state=wall_outer_bottom_state)
+        self.wall_outer_left = self.create_line(2, 0, 2, self.height, fill="black", width=3, state=wall_outer_left_state)
+        self.wall_outer_right = self.create_line(self.width-3, 0, self.width-3, self.height, fill="black", width=3, state=wall_outer_right_state)
+
