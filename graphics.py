@@ -209,6 +209,10 @@ class Cell(tk.Canvas):
         self.width = self.winfo_width()
         self.height = self.winfo_height()
 
+        self.wall_cell_top = self.create_line(0, 0, 0, 0)
+        self.wall_cell_bottom = self.create_line(0, 0, 0, 0)
+        self.wall_cell_left = self.create_line(0, 0, 0, 0)
+        self.wall_cell_right = self.create_line(0, 0, 0, 0)
         self.wall_inner_top = self.create_line(0, 0, 0, 0)
         self.wall_inner_bottom = self.create_line(0, 0, 0, 0)
         self.wall_inner_left = self.create_line(0, 0, 0, 0)
@@ -226,14 +230,28 @@ class Cell(tk.Canvas):
 
     def reset_state(self):
         # Cell Walls
+        self.itemconfig(self.wall_cell_top, state="hidden")
+        self.itemconfig(self.wall_cell_bottom, state="hidden")
+        self.itemconfig(self.wall_cell_left, state="hidden")
+        self.itemconfig(self.wall_cell_right, state="hidden")
+        if self.x > 0 and self.x < 7 and self.y > 0 and self.y < 6:
+            self.itemconfig(self.wall_cell_bottom, state="normal")
+        if self.x > 0 and self.x < 6 and self.y > 0 and self.y < 7:
+            self.itemconfig(self.wall_cell_right, state="normal")
+
+        # Inner Walls
         self.itemconfig(self.wall_inner_top, state="hidden")
         self.itemconfig(self.wall_inner_bottom, state="hidden")
         self.itemconfig(self.wall_inner_left, state="hidden")
         self.itemconfig(self.wall_inner_right, state="hidden")
-        if self.x > 0 and self.x < 7 and self.y > 0 and self.y < 6:
-            self.itemconfig(self.wall_inner_bottom, state="normal")
-        if self.x > 0 and self.x < 6 and self.y > 0 and self.y < 7:
+        if self.x == 3 and self.y > 0 and self.y < 7:
             self.itemconfig(self.wall_inner_right, state="normal")
+        if self.x == 4 and self.y > 0 and self.y < 7:
+            self.itemconfig(self.wall_inner_left, state="normal")
+        if (self.y == 2 or self.y == 4) and self.x > 0 and self.x < 7:
+            self.itemconfig(self.wall_inner_bottom, state="normal")
+        if (self.y == 3 or self.y == 5) and self.x > 0 and self.x < 7:
+            self.itemconfig(self.wall_inner_top, state="normal")
 
         # Outer Walls
         self.itemconfig(self.wall_outer_top, state="hidden")
@@ -250,6 +268,20 @@ class Cell(tk.Canvas):
             self.itemconfig(self.wall_outer_top, state="normal")
 
     def update_lines(self):
+        # Cell Walls
+        wall_cell_top_state = self.itemcget(self.wall_cell_top, "state")
+        wall_cell_bottom_state = self.itemcget(self.wall_cell_bottom, "state")
+        wall_cell_left_state = self.itemcget(self.wall_cell_left, "state")
+        wall_cell_right_state = self.itemcget(self.wall_cell_right, "state")
+        self.delete(self.wall_cell_top)
+        self.delete(self.wall_cell_bottom)
+        self.delete(self.wall_cell_left)
+        self.delete(self.wall_cell_right)
+        self.wall_cell_top = self.create_line(0, 0, self.width, 0, fill="black", width=1, state=wall_cell_top_state)
+        self.wall_cell_bottom = self.create_line(0, self.height-1, self.width, self.height-1, fill="black", width=1, state=wall_cell_bottom_state)
+        self.wall_cell_left = self.create_line(0, 0, 0, self.height, fill="black", width=1, state=wall_cell_left_state)
+        self.wall_cell_right = self.create_line(self.width-1, 0, self.width-1, self.height, fill="black", width=1, state=wall_cell_right_state)
+        
         # Inner Walls
         wall_inner_top_state = self.itemcget(self.wall_inner_top, "state")
         wall_inner_bottom_state = self.itemcget(self.wall_inner_bottom, "state")
@@ -259,10 +291,10 @@ class Cell(tk.Canvas):
         self.delete(self.wall_inner_bottom)
         self.delete(self.wall_inner_left)
         self.delete(self.wall_inner_right)
-        self.wall_inner_top = self.create_line(0, 0, self.width, 0, fill="black", width=1, state=wall_inner_top_state)
-        self.wall_inner_bottom = self.create_line(0, self.height-1, self.width, self.height-1, fill="black", width=1, state=wall_inner_bottom_state)
-        self.wall_inner_left = self.create_line(0, 0, 0, self.height, fill="black", width=1, state=wall_inner_left_state)
-        self.wall_inner_right = self.create_line(self.width-1, 0, self.width-1, self.height, fill="black", width=1, state=wall_inner_right_state)
+        self.wall_inner_top = self.create_line(0, 0, self.width, 0, fill="black", width=2, state=wall_inner_top_state)
+        self.wall_inner_bottom = self.create_line(0, self.height-1, self.width, self.height-1, fill="black", width=2, state=wall_inner_bottom_state)
+        self.wall_inner_left = self.create_line(0, 0, 0, self.height, fill="black", width=2, state=wall_inner_left_state)
+        self.wall_inner_right = self.create_line(self.width-1, 0, self.width-1, self.height, fill="black", width=2, state=wall_inner_right_state)
 
         # Outer Walls
         wall_outer_top_state = self.itemcget(self.wall_outer_top, "state")
@@ -273,10 +305,10 @@ class Cell(tk.Canvas):
         self.delete(self.wall_outer_bottom)
         self.delete(self.wall_outer_left)
         self.delete(self.wall_outer_right)
-        self.wall_outer_top = self.create_line(0, 1, self.width, 1, fill="black", width=3, state=wall_outer_top_state)
-        self.wall_outer_bottom = self.create_line(0, self.height-2, self.width, self.height-2, fill="black", width=3, state=wall_outer_bottom_state)
-        self.wall_outer_left = self.create_line(1, 0, 1, self.height, fill="black", width=3, state=wall_outer_left_state)
-        self.wall_outer_right = self.create_line(self.width-2, 0, self.width-2, self.height, fill="black", width=3, state=wall_outer_right_state)
+        self.wall_outer_top = self.create_line(0, 1, self.width, 1, fill="black", width=5, state=wall_outer_top_state)
+        self.wall_outer_bottom = self.create_line(0, self.height-2, self.width, self.height-2, fill="black", width=5, state=wall_outer_bottom_state)
+        self.wall_outer_left = self.create_line(1, 0, 1, self.height, fill="black", width=5, state=wall_outer_left_state)
+        self.wall_outer_right = self.create_line(self.width-2, 0, self.width-2, self.height, fill="black", width=5, state=wall_outer_right_state)
 
         # Corners
         self.delete(self.corner_top_left)
@@ -284,10 +316,10 @@ class Cell(tk.Canvas):
         self.delete(self.corner_bottom_left)
         self.delete(self.corner_bottom_right)
         if self.x == 0 and self.y ==0:
-            self.corner_top_left = self.create_rectangle(self.width-3, self.height-3, self.width, self.height, fill="black")
+            self.corner_top_left = self.create_rectangle(self.width-4, self.height-4, self.width, self.height, fill="black")
         if self.x == 7 and self.y ==0:
-            self.corner_top_right = self.create_rectangle(0, self.height, 2, self.height-3, fill="black")
+            self.corner_top_right = self.create_rectangle(0, self.height, 3, self.height-4, fill="black")
         if self.x == 0 and self.y == 7:
-            self.corner_bottom_left = self.create_rectangle(self.width-3, 0, self.width, 2, fill="black")
+            self.corner_bottom_left = self.create_rectangle(self.width-4, 0, self.width, 3, fill="black")
         if self.x == 7 and self.y == 7:
-            self.corner_bottom_right = self.create_rectangle(0, 0, 2, 2, fill="black")
+            self.corner_bottom_right = self.create_rectangle(0, 0, 3, 3, fill="black")
