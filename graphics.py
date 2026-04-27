@@ -323,4 +323,3 @@ class Cell(tk.Canvas):
             self.corner_bottom_left = self.create_rectangle(self.width-4, 0, self.width, 3, fill="black")
         if self.x == 7 and self.y == 7:
             self.corner_bottom_right = self.create_rectangle(0, 0, 3, 3, fill="black")
-
